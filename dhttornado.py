@@ -32,8 +32,8 @@ class AHandler(tornado.web.RequestHandler):
     def get(self):
         d = {}
 
-        for id, n in self.dht.node_lists.iteritems():
-            d["Node_List_%s" % id.encode("hex")] = n.get_debug_array()
+        #for id, n in self.dht.node_lists.iteritems():
+        #    d["Node_List_%s" % id.encode("hex")] = n.get_debug_array()
         self.set_header('Content-Type', 'text/plain')
         self.write(json.dumps(d, indent=2, cls=ComplexEncoder))
 
@@ -97,7 +97,6 @@ class DumpHandler(tornado.web.RequestHandler):
         f = open("/tmp/ip_port.txt", 'w')
         f.write(repr(rt))
         f.close()
-        #self.write(repr(rt))
         self.write("success!!")
 
 
@@ -163,13 +162,21 @@ if __name__ == "__main__":
     settings = {}
 
     #, ('router.bitcomet.com', 6881)
-    ip_ports = [('router.bittorrent.com', 6881), ('router.utorrent.com', 6881), ('dht.transmissionbt.com', 6881)]
+    #	"dht.transmissionbt.com:6881",,"router.utorrent.com:6881","router.transmission.com:6881"}
+    ip_ports = [('router.bittorrent.com', 6881),
+                ('router.utorrent.com', 6881),
+                ('dht.transmissionbt.com', 6881),
+                ("service.ygrek.org.ua", 6881),
+                ("router.transmission.com", 6881),
+                ]
     #读dump
     path = "/tmp/ip_port.txt"
     if os.path.isfile(path):
         f = open(path)
         l = ast.literal_eval(f.read())
         ip_ports = ip_ports + l
+
+    #print ip_ports
 
     #开始端口
     start_port = 51414
@@ -178,6 +185,7 @@ if __name__ == "__main__":
 
     dht_list = []
     for i in range(count):
+        #23649f6ace4b4062879066a6afe99b91c1880b8f
         dht0 = dht.DHT(start_port+i, ip_ports, node_id="23649f6ace4b4062879066a6afe99b91c1880b8f".decode('hex'))
         dht_list.append(dht0)
 

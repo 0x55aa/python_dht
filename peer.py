@@ -244,5 +244,4 @@ class DHTTree(object):
 dht_tree = DHTTree()
 get_peers_callbacks = {}
 infohash_peers = {}
-node_lists = {}
 #queries = {}
