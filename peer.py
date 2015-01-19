@@ -4,7 +4,7 @@ import logging
 from functools import partial
 
 
-PONG_TIMEOUT = 5
+PONG_TIMEOUT = 60*15
 
 
 #Returns a iterator that will iterate bit by bit over a string!

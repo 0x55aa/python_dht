@@ -69,6 +69,8 @@ class DHTQuery(object):
     保存发送的消息，用于判断消息的合法
     将直接保存msg修改成单个对象了
     """
+    __slots__ = ('time_sent', 't_id', 'a_target', 'a_info_hash', 'q')
+
     def __init__(self, t_id=None, a_target=None, a_info_hash=None, q=None):
         self.time_sent = time.time()
         #
