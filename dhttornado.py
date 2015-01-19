@@ -177,7 +177,8 @@ if __name__ == "__main__":
     # print(ip_ports)
 
     # 23649f6ace4b4062879066a6afe99b91c1880b8f
-    node_id = 'd54408eb2a5d686bd3e587f7a96c2facebbeadfc'.decode('hex')
+    # node_id = 'd54408eb2a5d686bd3e587f7a96c2facebbeadfc'.decode('hex')
+    node_id = '23649f6ace4b4062879066a6afe99b91c1880b8f'.decode('hex')
     dht = dht.DHT(51414, ip_ports, node_id=node_id)
 
     frontend_routes = [

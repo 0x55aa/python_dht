@@ -88,7 +88,7 @@ class DHTQuery(object):
 
 class DHT(object):
     NODE_ID_IP_PORT_LENGTH = 26
-    PONG_TIMEOUT = 600
+    PONG_TIMEOUT = 5
     IP_PORT_LENGTH = 6
     BOOTSTRAP_DELAY = 60
     TRANSACTION_ID_TIMEOUT = 30
@@ -165,24 +165,23 @@ class DHT(object):
 
         return pack("H", self.transaction_id)
 
-        #~~~~~~~~~~ MESSAGES define at http://www.bittorrent.org/beps/bep_0005.html
+        # MESSAGES define at http://www.bittorrent.org/beps/bep_0005.html
 
-        #~~~~~~~~~~~~~~~~ MESSAGE: PING
-        #ping Query = {"t":"aa", "y":"q", "q":"ping", "a":{"id":"abcdefghij0123456789"}}
-        #Response = {"t":"aa", "y":"r", "r": {"id":"mnopqrstuvwxyz123456"}}
+        # MESSAGE: PING
+        # ping Query = {"t":"aa", "y":"q", "q":"ping", "a":{"id":"abcdefg"}}
+        # Response = {"t":"aa", "y":"r", "r": {"id":"mnopqrstuvwxyz123456"}}
     def ping(self, ip_port):
         """
         ping操作，好像只是用来区分本地操作的
         之后发送包
         只用用t的值做key，保存发送的包和ip.端口
         """
-        #logging.info( "PING ----%s--->\n" % str(ip_port) )
+        # logging.info( "PING ----%s--->\n" % str(ip_port) )
         t_id = self.get_trasaction_id()
-        #print t_id
+        # print t_id
         ping_msg = {"t": t_id, "y": "q", "q": "ping", "a": {"id": self.id}}
         self.sock.sendto(bencode(ping_msg), ip_port)
         self.queries[t_id] = DHTQuery(t_id=ping_msg['t'], q=ping_msg['q'])
-        #return t_id
 
     def got_ping_response(self, response, ip_port):
         """
