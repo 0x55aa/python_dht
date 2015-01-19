@@ -232,12 +232,13 @@ class DHTTree(object):
                         break
                     else:
                         # 这里不做ping检查了，是一个直接删掉原来的，加上新的
-                        # print "Before:%s" % str(cur_node.value)
-                        # self.find_non_responsive_node(cur_node, dht_node, dht)
-                        # print "After:%s" % str(cur_node.value)
+                        # 可能会出现tree变大的情况
+                        # cur_node.remove_by_attribute("id", dht_node.id)
+                        # cur_node.value.append(dht_node)
 
-                        cur_node.remove_by_attribute("id", dht_node.id)
-                        cur_node.value.append(dht_node)
+                        # print "Before:%s" % str(cur_node.value)
+                        self.find_non_responsive_node(cur_node, dht_node, dht)
+                        # print "After:%s" % str(cur_node.value)
 
                         break
                 else:
