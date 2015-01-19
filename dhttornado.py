@@ -161,7 +161,7 @@ if __name__ == "__main__":
     settings = {}
 
     ip_ports = [('router.bittorrent.com', 6881),
-                ('router.bitcomet.com', 6881),
+                # ('router.bitcomet.com', 6881),
                 ('router.utorrent.com', 6881),
                 ('dht.transmissionbt.com', 6881),
                 ("service.ygrek.org.ua", 6881),

@@ -1,0 +1,7 @@
+/.hg
+*.pyc
+*.pyo
+*.db
+*.zip
+db.sqlite3
+local.py 

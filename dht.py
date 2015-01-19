@@ -88,7 +88,7 @@ class DHTQuery(object):
 
 class DHT(object):
     NODE_ID_IP_PORT_LENGTH = 26
-    PONG_TIMEOUT = 5
+    PONG_TIMEOUT = 600
     IP_PORT_LENGTH = 6
     BOOTSTRAP_DELAY = 60
     TRANSACTION_ID_TIMEOUT = 30
@@ -106,24 +106,24 @@ class DHT(object):
             self.id = node_id
 
         logging.info(self.id.encode('hex'))
-        #dht_tree 共用
+        # dht_tree 共用
         self.routing_table = dht_tree
 
-        #共用
+        # 共用
         self.queries = {}  # queries
 
-        #下面两个变量共用
+        # 下面两个变量共用
         self.get_peers_callbacks = get_peers_callbacks
         self.infohash_peers = infohash_peers
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.io_loop.add_handler(self.sock.fileno(), self.handle_input, self.io_loop.READ)
 
-        #Make a list of nodes to search for. This shoudl make it so my
-        #routing table has a wide variety of nodes
+        # Make a list of nodes to search for. This shoudl make it so my
+        # routing table has a wide variety of nodes
         self.current_bootstrap_node = 0
 
-        #用来查找node，保持活跃
+        # 用来查找node，保持活跃
         self.find_self = False
 
         random.seed()
@@ -632,17 +632,19 @@ class DHT(object):
                 #print "*" * 20, "del queries"
         self.io_loop.add_timeout(time.time() + DHT.TRANSACTION_ID_TIMEOUT, self.check_queries)
 
-    #XXX: This could block on sock.sendto, maybe do non blocking
+    # XXX: This could block on sock.sendto, maybe do non blocking
     def bootstrap(self):
         self.io_loop.add_timeout(time.time() + DHT.PONG_TIMEOUT, self.bootstrap_by_finding_myself)
-        #对self.queries里面的超时检测，占用内存很大,30秒检查一遍
-        #self.io_loop.add_timeout(time.time() + DHT.TRANSACTION_ID_TIMEOUT, self.check_queries)
 
-        #self.io_loop.add_timeout(time.time() + 5, self.get_peers_test)
-        #self.io_loop.add_timeout(time.time() + 5, partial(self.find_node, "\x00" * 20))
+        # 对self.queries里面的超时检测，占用内存很大,30秒检查一遍
+        # self.io_loop.add_timeout(time.time() + DHT.TRANSACTION_ID_TIMEOUT, self.check_queries)
+
+        # self.io_loop.add_timeout(time.time() + 5, self.get_peers_test)
+        # self.io_loop.add_timeout(time.time() + 5, partial(self.find_node, "\x00" * 20))
 
         self.insert_dump_peers()
         for ip_port in self.ip_ports:
+            # print(ip_port)
             self.ping(ip_port)
 
     def insert_dump_peers(self):
