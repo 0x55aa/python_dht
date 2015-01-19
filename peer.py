@@ -117,13 +117,12 @@ class DHTTree(object):
     保存所有节点
     """
     MAX_LIST_LENGTH = 8
-    BUCKET_UPDATE_TIME = 5
 
     def __init__(self):
         self._root = DHTBucket(None, None)
         self._add_branches_to_node(self._root)
         self.bitmask = 1 << (20 * 8 - 1)
-        #self.lenght = 0
+        # self.lenght = 0
 
     def _add_branches_to_node(self, node):
         node.left = DHTBucket(0, [])
@@ -174,8 +173,7 @@ class DHTTree(object):
     #A few seconds later go and make sure all those pongs came back via the
     #transaction IDS
     def find_non_responsive_node(self, cur_node, new_node, dht):
-        if time.time() < cur_node.last_time_validity_checked + DHTTree.BUCKET_UPDATE_TIME:
-            #print "\n\n\t~~~~~~I already updated this dont do it again for a while\n\n"
+        if time.time() < cur_node.last_time_validity_checked + PONG_TIMEOUT:
             # I updated this bucket a few seconds ago.Dont bother those peers again
             return
         cur_node.last_time_validity_checked = time.time()
@@ -184,9 +182,9 @@ class DHTTree(object):
             for count, transaction_id in enumerate(ping_transactions):
                 if transaction_id in dht.queries:
                     node_to_remove_ip_port = dht.queries[transaction_id].ip_port
-                    #print "Removing %s" % len(cur_node.value)
+                    # print "Removing %s" % len(cur_node.value)
                     cur_node.remove_by_attribute("ip_port", node_to_remove_ip_port)
-                    #print "Removing %s" % len(cur_node.value)
+                    # print "Removing %s" % len(cur_node.value)
                 if not cur_node.is_full():
                     cur_node.value.append(new_node)
 
@@ -216,29 +214,31 @@ class DHTTree(object):
             cur_node = cur_node[other_next_bit]
 
             if cur_node and (cur_node.value is not None):
-                #self.lenght += 1
+                # self.lenght += 1
                 if cur_node.is_full():
-                    #import pdb; pdb.set_trace()
+                    # import pdb; pdb.set_trace()
                     if same_branch:
                         nodes_to_re_add = cur_node.value
                         cur_node.value = None
                         self._add_branches_to_node(cur_node)
                         for n in nodes_to_re_add:
-                            #print "Readding %s" % n
+                            # print "Readding %s" % n
                             self.insert(n, dht)
                         self.insert(dht_node, dht)
-                        #print "Done"
+                        # print "Done"
                         break
                     else:
-                        #print "Before:%s" % str(cur_node.value)
+                        # print "Before:%s" % str(cur_node.value)
                         self.find_non_responsive_node(cur_node, dht_node, dht)
-                        #print "After:%s" % str(cur_node.value)
+                        # print "After:%s" % str(cur_node.value)
                         break
                 else:
                     if dht_node not in cur_node.value:
                         cur_node.value.append(dht_node)
-                        #logging.info(str(cur_node.value))
+                        # logging.info(str(cur_node.value))
                         break
+
+            # print("loop")
 
 
 dht_tree = DHTTree()
