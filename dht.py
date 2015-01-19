@@ -7,7 +7,6 @@ import hashlib
 import socket
 import time
 from struct import unpack, pack
-from heapq import heappush, nsmallest
 import logging
 
 import tornado.ioloop
@@ -15,23 +14,23 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 
-from peer import DHTPeer, dht_tree, get_peers_callbacks, infohash_peers  # , queries
+from peer import DHTPeer, dht_tree, get_peers_callbacks, infohash_peers
 
 URL = "http://127.0.0.1:9999/web/insert/"
 URL2 = "http://127.0.0.1:9999/web/insert2/"
 
 
-#添加infohash到数据库###
+# 添加infohash到数据库
 def insert_into_database(info_hash, insert_url):
-    #这里直接请求web接口，让web添加
+    # 这里直接请求web接口，让web添加
     import urllib2
     url = insert_url + info_hash.encode("hex") + '/'
     try:
         res = urllib2.urlopen(url).read()
         if not res:
-            logging.info("insert into database faild")
+            logging.info("insert into database faild. hash: %s" % info_hash.encode('hex'))
     except:
-        logging.info("insert into database faild!")
+        logging.info("insert into database faild! hash: %s" % info_hash.encode('hex'))
 
 
 #This just returns a random number between 0 and MAX 32 Bit Int

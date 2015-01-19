@@ -1,12 +1,10 @@
 # coding:utf-8
-#节点的重复判断
 import os
 import ast
 
 import dht
 from dht import DHTPeer
 import json
-#from struct import *
 
 import tornado.ioloop
 
@@ -32,8 +30,8 @@ class AHandler(tornado.web.RequestHandler):
     def get(self):
         d = {}
 
-        #for id, n in self.dht.node_lists.iteritems():
-        #    d["Node_List_%s" % id.encode("hex")] = n.get_debug_array()
+        # for id, n in self.dht.node_lists.iteritems():
+        #     d["Node_List_%s" % id.encode("hex")] = n.get_debug_array()
         self.set_header('Content-Type', 'text/plain')
         self.write(json.dumps(d, indent=2, cls=ComplexEncoder))
 
@@ -46,7 +44,8 @@ class BHandler(tornado.web.RequestHandler):
     def get(self):
         d = {}
         for id in self.dht.infohash_peers:
-            d["Peers_for_%s" % id.encode("hex")] = self.dht.infohash_peers[id].keys()
+            key = "Peers_for_%s" % id.encode("hex")
+            d[key] = self.dht.infohash_peers[id].keys()
 
         self.set_header('Content-Type', 'text/plain')
         self.write(json.dumps(d, indent=2, cls=ComplexEncoder))
@@ -139,8 +138,8 @@ class IndexHandler(tornado.web.RequestHandler):
         populate(self.dht.routing_table._root, rt)
 
         d = {
-            #'zid': str(self.dht.id),
-            #'aid': str(self.dht.id),
+            # 'zid': str(self.dht.id),
+            # 'aid': str(self.dht.id),
             'dht': str(self.dht),
             'routing_table': str(self.dht.routing_table),
             'rt': rt
@@ -158,38 +157,28 @@ if __name__ == "__main__":
     define('frontend_port', default=7070, type=int)
 
     tornado.options.parse_command_line()
-    #settings = dict((k, v.value()) for k, v in options.items())
+    # settings = dict((k, v.value()) for k, v in options.items())
     settings = {}
 
-    #, ('router.bitcomet.com', 6881)
-    #	"dht.transmissionbt.com:6881",,"router.utorrent.com:6881","router.transmission.com:6881"}
     ip_ports = [('router.bittorrent.com', 6881),
+                ('router.bitcomet.com', 6881),
                 ('router.utorrent.com', 6881),
                 ('dht.transmissionbt.com', 6881),
                 ("service.ygrek.org.ua", 6881),
                 ("router.transmission.com", 6881),
                 ]
-    #读dump
+    # 读dump
     path = "/tmp/ip_port.txt"
     if os.path.isfile(path):
         f = open(path)
         l = ast.literal_eval(f.read())
         ip_ports = ip_ports + l
 
-    #print ip_ports
+    # print(ip_ports)
 
-    #开始端口
-    start_port = 51414
-    #节点数
-    count = 1
-
-    dht_list = []
-    for i in range(count):
-        #23649f6ace4b4062879066a6afe99b91c1880b8f
-        dht0 = dht.DHT(start_port+i, ip_ports, node_id="23649f6ace4b4062879066a6afe99b91c1880b8f".decode('hex'))
-        dht_list.append(dht0)
-
-    #dht = dht.DHT(51414, ip_ports, node_id='d54408eb2a5d686bd3e587f7a96c2facebbeadfc'.decode('hex'))
+    # 23649f6ace4b4062879066a6afe99b91c1880b8f
+    node_id = 'd54408eb2a5d686bd3e587f7a96c2facebbeadfc'.decode('hex')
+    dht = dht.DHT(51414, ip_ports, node_id=node_id)
 
     frontend_routes = [
         ('/c', IndexHandler),
@@ -200,22 +189,17 @@ if __name__ == "__main__":
         ('/dumpmem', DumpMemHandler),
     ]
     frontend_application = tornado.web.Application(frontend_routes, **settings)
-    frontend_server = tornado.httpserver.HTTPServer(frontend_application, io_loop=ioloop)
+    frontend_server = tornado.httpserver.HTTPServer(frontend_application,
+                                                    io_loop=ioloop)
     frontend_server.bind(options.frontend_port, '')
     frontend_server.start()
 
-    IndexHandler.register_dht(dht_list[0])
-    AHandler.register_dht(dht_list[0])
-    BHandler.register_dht(dht_list[0])
-    DumpHandler.register_dht(dht_list[0])
-    DumpMemHandler.register_dht(dht_list[0])
-    DumpPeersHandler.register_dht(dht_list[0])
-    #IndexHandler.register_dht(dht)
+    IndexHandler.register_dht(dht)
+    AHandler.register_dht(dht)
+    BHandler.register_dht(dht)
+    DumpHandler.register_dht(dht)
+    DumpMemHandler.register_dht(dht)
+    DumpPeersHandler.register_dht(dht)
 
-    #dht.bootstrap()
-    #dht.start()
-
-    for dht1 in dht_list:
-        dht1.bootstrap()
-    for dht2 in dht_list:
-        dht2.start()
+    dht.bootstrap()
+    dht.start()
