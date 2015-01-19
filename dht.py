@@ -33,16 +33,6 @@ def insert_into_database(info_hash, insert_url):
         logging.info("insert into database faild! hash: %s" % info_hash.encode('hex'))
 
 
-# This just returns a random number between 0 and MAX 32 Bit Int
-def gen_unsigned_32bit_id():
-    return random.randint(0, 0xFFFFFFFF)
-
-
-# This just returns a random unsigned int
-def gen_signed_32bit_id():
-    return random.randint(-2147483648, 2147483647)
-
-
 # Generates a string of 20 random bytes
 def gen_peer_id():
     return gen_random_string_of_bytes(20)
@@ -50,18 +40,6 @@ def gen_peer_id():
 
 def gen_random_string_of_bytes(length):
     return ''.join(chr(random.randint(0, 255)) for x in range(length))
-
-
-def array_to_string(arr):
-    return ''.join(chr(x) for x in arr)
-
-
-def xor_array(n1, n2):
-    return [ord(n1[i]) ^ ord(n2[i]) for i, _ in enumerate(n1)]
-
-
-def dht_dist(n1, n2):
-    return xor_array(n1, n2)
 
 
 class DHTQuery(object):
@@ -173,7 +151,7 @@ class DHT(object):
         之后发送包
         只用用t的值做key，保存发送的包和ip.端口
         """
-        # logging.info( "PING ----%s--->\n" % str(ip_port) )
+        logging.info( "PING ----%s--->\n" % str(ip_port) )
         t_id = self.get_trasaction_id()
         # print t_id
         ping_msg = {"t": t_id, "y": "q", "q": "ping", "a": {"id": self.id}}

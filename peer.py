@@ -28,14 +28,15 @@ class DHTBucket(object):
     """
     桶
     """
-    #__slots__ =
-    #['key', 'value', 'left', 'right', 'last_time_validity_checked']
+    __slots__ = ('key', 'value', 'left', 'right', 'last_time_validity_checked')
+
     def __init__(self, key, value):
         self.key = key
+        # nodes in bucket 
         self.value = value
         self.left = None
         self.right = None
-        self.last_time_validity_checked = 0  # time.time()
+        self.last_time_validity_checked = time.time()
 
     def __str__(self):
         return self.__repr__()
@@ -44,9 +45,9 @@ class DHTBucket(object):
         ret_str = ""
         if self.value:
             ret_str += "V(%s)  " % self.value
-        #if self.left:
+        # if self.left:
         ret_str += "L(%s)  " % self.left
-        #if self.right:
+        # if self.right:
         ret_str += "R(%s)" % self.right
 
         return ret_str
@@ -77,10 +78,10 @@ class DHTBucket(object):
         return len(self.value) >= DHTTree.MAX_LIST_LENGTH
 
     def free(self):
+        self.key = None
         self.left = None
         self.right = None
         self.value = None
-        self.key = None
 
 
 class DHTPeer(object):
@@ -88,6 +89,8 @@ class DHTPeer(object):
     节点保存在这里
     id ip port
     """
+    __slots__ = ('id', 'ip_port')
+
     def __init__(self, id, ip_port):
         self.id = id
         self.ip_port = ip_port
@@ -114,7 +117,7 @@ class DHTPeer(object):
 
 class DHTTree(object):
     """
-    保存所有节点
+    保存所有bucket, 2 ** 160 / 8 bucket
     """
     MAX_LIST_LENGTH = 8
 
@@ -228,14 +231,21 @@ class DHTTree(object):
                         # print "Done"
                         break
                     else:
+                        # 这里不做ping检查了，是一个直接删掉原来的，加上新的
                         # print "Before:%s" % str(cur_node.value)
-                        self.find_non_responsive_node(cur_node, dht_node, dht)
+                        # self.find_non_responsive_node(cur_node, dht_node, dht)
                         # print "After:%s" % str(cur_node.value)
+
+                        cur_node.remove_by_attribute("id", dht_node.id)
+                        cur_node.value.append(dht_node)
+
                         break
                 else:
                     if dht_node not in cur_node.value:
                         cur_node.value.append(dht_node)
                         # logging.info(str(cur_node.value))
+                        break
+                    else:
                         break
 
             # print("loop")
