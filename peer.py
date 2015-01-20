@@ -7,7 +7,7 @@ from functools import partial
 PONG_TIMEOUT = 60*15
 
 
-#Returns a iterator that will iterate bit by bit over a string!
+# Returns a iterator that will iterate bit by bit over a string!
 def string_bit_iterator(str_to_iterate):
     bitmask = 128  # 1 << 7 or '0b10000000'
     cur_char_index = 0
@@ -131,10 +131,10 @@ class DHTTree(object):
         node.left = DHTBucket(0, [])
         node.right = DHTBucket(1, [])
 
-    #Response for find_node, iterate down the tree
-    #as far as possible to get a bucket to retunr
-    #Takes a string of bytes (represnting a DHT Node ID)
-    #Or a DHTPeer because it implements __iter__
+    # Response for find_node, iterate down the tree
+    # as far as possible to get a bucket to retunr
+    # Takes a string of bytes (represnting a DHT Node ID)
+    # Or a DHTPeer because it implements __iter__
     def get_target_bucket(self, target):
         if isinstance(target, basestring):
             key = string_bit_iterator(target)
@@ -144,10 +144,10 @@ class DHTTree(object):
             logging.error("Target must be either a string or DHTPeer type")
             return -1
 
-        #This should iterate down the same side of a tree as the key provided.
-        #It should then return up the list of nodes it finds. It then adds
-        #nodes from the opposing branch from the bottom up until the list is
-        #DHTTree.MAX_LIST_LENGTH long
+        # This should iterate down the same side of a tree as the key provided.
+        # It should then return up the list of nodes it finds. It then adds
+        # nodes from the opposing branch from the bottom up until the list is
+        # DHTTree.MAX_LIST_LENGTH long
         def search_tree(key, cur_node):
             try:
                 b = key.next()
@@ -170,14 +170,14 @@ class DHTTree(object):
 
         return search_tree(key, self._root)
 
-    #Set a timeout that this bucket was last checked
-    #If the time has passed then check the buket again
-    #When checking the bucket ping all nodes and remember transaction IDS
-    #A few seconds later go and make sure all those pongs came back via the
-    #transaction IDS
+    # Set a timeout that this bucket was last checked
+    # If the time has passed then check the buket again
+    # When checking the bucket ping all nodes and remember transaction IDS
+    # A few seconds later go and make sure all those pongs came back via the
+    # transaction IDS
     def find_non_responsive_node(self, cur_node, new_node, dht):
         if time.time() < cur_node.last_time_validity_checked + PONG_TIMEOUT:
-            # I updated this bucket a few seconds ago.Dont bother those peers again
+            # 没有过时间，不更新
             return
         cur_node.last_time_validity_checked = time.time()
 
